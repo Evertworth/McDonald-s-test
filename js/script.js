@@ -1,17 +1,9 @@
-// ============================================
-// グローバル変数
-// ============================================
 let currentPage = 1;
 let itemsPerPage = 10;
 let currentSort = { column: null, direction: 'asc' };
 let currentFilters = {};
 let currentSearchTerm = '';
 
-// ============================================
-// ユーティリティ関数
-// ============================================
-
-// 通知表示
 function showNotification(message, type = 'info') {
     const container = document.getElementById('notification-container');
     const notification = document.createElement('div');
@@ -27,7 +19,6 @@ function showNotification(message, type = 'info') {
     }, 3000);
 }
 
-// モーダルを開く
 function openModal(title, bodyHTML, onSubmit) {
     const modal = document.getElementById('modal-overlay');
     document.getElementById('modal-title').textContent = title;
@@ -38,12 +29,10 @@ function openModal(title, bodyHTML, onSubmit) {
     submitBtn.onclick = onSubmit;
 }
 
-// モーダルを閉じる
 function closeModal() {
     document.getElementById('modal-overlay').style.display = 'none';
 }
 
-// 確認ダイアログ
 function confirm(message, onConfirm) {
     const dialog = document.getElementById('confirm-dialog');
     document.getElementById('confirm-message').textContent = message;
@@ -59,11 +48,9 @@ function closeConfirm() {
     document.getElementById('confirm-dialog').style.display = 'none';
 }
 
-// データフィルタリング
 function filterData(data, filters, searchTerm) {
     let filtered = [...data];
     
-    // 検索
     if (searchTerm) {
         filtered = filtered.filter(item => {
             return Object.values(item).some(value => 
@@ -72,7 +59,6 @@ function filterData(data, filters, searchTerm) {
         });
     }
     
-    // フィルター
     Object.keys(filters).forEach(key => {
         if (filters[key]) {
             filtered = filtered.filter(item => item[key] === filters[key]);
@@ -82,7 +68,6 @@ function filterData(data, filters, searchTerm) {
     return filtered;
 }
 
-// データソート
 function sortData(data, column, direction) {
     if (!column) return data;
     
@@ -101,14 +86,12 @@ function sortData(data, column, direction) {
     });
 }
 
-// ページネーション
 function paginateData(data, page, perPage) {
     const start = (page - 1) * perPage;
     const end = start + perPage;
     return data.slice(start, end);
 }
 
-// ページネーションコントロール生成
 function createPagination(totalItems, currentPage, itemsPerPage, onPageChange) {
     const totalPages = Math.ceil(totalItems / itemsPerPage);
     
@@ -116,10 +99,8 @@ function createPagination(totalItems, currentPage, itemsPerPage, onPageChange) {
     
     let html = '<div class="pagination">';
     
-    // 前へボタン
     html += `<button class="pagination-button" ${currentPage === 1 ? 'disabled' : ''} onclick="${onPageChange}(${currentPage - 1})">前へ</button>`;
     
-    // ページ番号
     for (let i = 1; i <= totalPages; i++) {
         if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
             html += `<button class="pagination-button ${i === currentPage ? 'active' : ''}" onclick="${onPageChange}(${i})">${i}</button>`;
@@ -128,7 +109,6 @@ function createPagination(totalItems, currentPage, itemsPerPage, onPageChange) {
         }
     }
     
-    // 次へボタン
     html += `<button class="pagination-button" ${currentPage === totalPages ? 'disabled' : ''} onclick="${onPageChange}(${currentPage + 1})">次へ</button>`;
     
     html += `<span class="pagination-info">${totalItems}件中 ${(currentPage - 1) * itemsPerPage + 1}-${Math.min(currentPage * itemsPerPage, totalItems)}件表示</span>`;
@@ -137,7 +117,6 @@ function createPagination(totalItems, currentPage, itemsPerPage, onPageChange) {
     return html;
 }
 
-// CSV エクスポート
 function exportToCSV(data, filename) {
     if (!data || data.length === 0) {
         showNotification('エクスポートするデータがありません', 'warning');
@@ -162,12 +141,8 @@ function exportToCSV(data, filename) {
     showNotification('データをエクスポートしました', 'success');
 }
 
-// ============================================
-// 模拟数据 - 基于麦当劳日本官网真实菜单
-// ============================================
 const mockData = {
     menuItems: [
-        // バーガー類
         { id: 1, name: 'ビッグマック', nameEn: 'Big Mac', price: 450, category: 'バーガー', calories: 525, image: 'https://images.unsplash.com/photo-1550547660-d9450f859349?w=400&h=300&fit=crop' },
         { id: 2, name: '倍ビッグマック', nameEn: 'Double Big Mac', price: 650, category: 'バーガー', calories: 742, image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&h=300&fit=crop' },
         { id: 3, name: 'チーズバーガー', nameEn: 'Cheeseburger', price: 150, category: 'バーガー', calories: 307, image: 'https://images.unsplash.com/photo-1551782450-17144efb9c50?w=400&h=300&fit=crop' },
@@ -179,14 +154,10 @@ const mockData = {
         { id: 9, name: 'てりやきチキンフィレオ', nameEn: 'Teriyaki Chicken Filet', price: 420, category: 'バーガー', calories: 496, image: 'https://images.unsplash.com/photo-1561758033-d89a9ad46330?w=400&h=300&fit=crop' },
         { id: 10, name: 'ホットチリ&タルタルチキン', nameEn: 'Hot Chili & Tartar Chicken', price: 520, category: 'バーガー', calories: 538, image: 'https://www.mcdonalds.co.jp/product_images/3361/1596.m.webp?20260114100104' },
         { id: 11, name: 'ドラクエバーガー', nameEn: 'Dragon Quest Burger', price: 580, category: 'バーガー', calories: 612, image: 'https://images.unsplash.com/photo-1572802419224-296b0aeee0d9?w=400&h=300&fit=crop' },
-        
-        // 朝マック
         { id: 12, name: 'マックグリドル ソーセージエッグ', nameEn: 'McGriddles Sausage Egg', price: 370, category: '朝マック', calories: 551, image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400&h=300&fit=crop' },
         { id: 13, name: 'ソーセージエッグマフィン', nameEn: 'Sausage Egg Muffin', price: 250, category: '朝マック', calories: 487, image: 'https://images.unsplash.com/photo-1621852004158-f3bc188ace2d?w=400&h=300&fit=crop' },
         { id: 14, name: 'ソーセージマフィン', nameEn: 'Sausage Muffin', price: 120, category: '朝マック', calories: 391, image: 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=400&h=300&fit=crop' },
         { id: 15, name: 'エッグマックマフィン', nameEn: 'Egg McMuffin', price: 230, category: '朝マック', calories: 310, image: 'https://images.unsplash.com/photo-1619096252214-ef06c45683e3?w=400&h=300&fit=crop' },
-        
-        // サイドメニュー
         { id: 16, name: 'マックフライポテト(S)', nameEn: 'French Fries S', price: 180, category: 'サイド', calories: 225, image: 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=400&h=300&fit=crop' },
         { id: 17, name: 'マックフライポテト(M)', nameEn: 'French Fries M', price: 290, category: 'サイド', calories: 424, image: 'https://images.unsplash.com/photo-1630384060421-cb20d0e0649d?w=400&h=300&fit=crop' },
         { id: 18, name: 'マックフライポテト(L)', nameEn: 'French Fries L', price: 340, category: 'サイド', calories: 571, image: 'https://images.unsplash.com/photo-1598679253544-2c97992403ea?w=400&h=300&fit=crop' },
@@ -194,16 +165,12 @@ const mockData = {
         { id: 20, name: 'チキンマックナゲット 5ピース', nameEn: 'Chicken McNuggets 5pc', price: 250, category: 'サイド', calories: 270, image: 'https://images.unsplash.com/photo-1562967914-608f82629710?w=400&h=300&fit=crop' },
         { id: 21, name: 'スパイシーチキンマックナゲット 黒胡椒ガーリック', nameEn: 'Spicy Chicken McNuggets', price: 280, category: 'サイド', calories: 285, image: 'https://www.mcdonalds.co.jp/product_images/3378/1688.m.webp?20260109135914' },
         { id: 22, name: 'えびフィレオ', nameEn: 'Ebi Filet-O', price: 390, category: 'サイド', calories: 395, image: 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=400&h=300&fit=crop' },
-        
-        // ドリンク
         { id: 23, name: 'コカ・コーラ(S)', nameEn: 'Coca-Cola S', price: 130, category: 'ドリンク', calories: 90, image: 'https://images.unsplash.com/photo-1554866585-cd94860890b7?w=400&h=300&fit=crop' },
         { id: 24, name: 'コカ・コーラ(M)', nameEn: 'Coca-Cola M', price: 190, category: 'ドリンク', calories: 140, image: 'https://images.unsplash.com/photo-1581006852262-e4307cf6283a?w=400&h=300&fit=crop' },
         { id: 25, name: 'コカ・コーラ(L)', nameEn: 'Coca-Cola L', price: 230, category: 'ドリンク', calories: 192, image: 'https://images.unsplash.com/photo-1629203851122-3726ecdf080e?w=400&h=300&fit=crop' },
         { id: 26, name: 'アイスコーヒー(M)', nameEn: 'Iced Coffee M', price: 150, category: 'ドリンク', calories: 10, image: 'https://images.unsplash.com/photo-1517487881594-2787fef5ebf7?w=400&h=300&fit=crop' },
         { id: 27, name: 'マックシェイク バニラ', nameEn: 'McShake Vanilla', price: 150, category: 'ドリンク', calories: 213, image: 'https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=400&h=300&fit=crop' },
         { id: 28, name: 'マックシェイク チョコ', nameEn: 'McShake Chocolate', price: 150, category: 'ドリンク', calories: 228, image: 'https://images.unsplash.com/photo-1579954115545-a95591f28bfc?w=400&h=300&fit=crop' },
-        
-        // スイーツ
         { id: 29, name: '生チョコクリームパイ', nameEn: 'Raw Chocolate Cream Pie', price: 180, category: 'スイーツ', calories: 312, image: 'https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?w=400&h=300&fit=crop' },
         { id: 30, name: '塩キャラメルアーモンドパイ', nameEn: 'Salted Caramel Almond Pie', price: 180, category: 'スイーツ', calories: 298, image: 'https://images.unsplash.com/photo-1535920527002-b35e96722eb9?w=400&h=300&fit=crop' },
         { id: 31, name: 'マックフルーリー きのこの山とたけのこの里', nameEn: 'McFlurry Kinoko & Takenoko', price: 340, category: 'スイーツ', calories: 425, image: 'https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=400&h=300&fit=crop' },
@@ -257,7 +224,6 @@ const mockData = {
         { id: 14, name: '井上陽介', level: 'ゴールド', points: 1340, orders: 29 },
         { id: 15, name: '木村拓也', level: 'プラチナ', points: 4250, orders: 89 }
     ],
-    // ダッシュボード統計データ
     dashboard: {
         todaySales: 2847600,
         todayOrders: 1247,
@@ -270,7 +236,6 @@ const mockData = {
             { name: 'チキンマックナゲット', sales: 234, revenue: 58500 }
         ]
     },
-    // 在庫管理データ
     inventory: [
         { id: 1, name: 'ビーフパティ', stock: 450, unit: 'kg', minStock: 200, status: '正常', consumption: 85 },
         { id: 2, name: 'バンズ', stock: 1200, unit: '個', minStock: 500, status: '正常', consumption: 320 },
@@ -283,7 +248,6 @@ const mockData = {
         { id: 9, name: 'ピクルス', stock: 32, unit: 'kg', minStock: 30, status: '正常', consumption: 15 },
         { id: 10, name: '揚げ油', stock: 180, unit: 'L', minStock: 100, status: '正常', consumption: 35 }
     ],
-    // スタッフ管理データ
     staff: [
         { id: 1, name: '田中一郎', position: '店長', hours: 168, performance: 95, shift: '08:00-17:00' },
         { id: 2, name: '鈴木美咲', position: 'マネージャー', hours: 152, performance: 92, shift: '09:00-18:00' },
@@ -296,7 +260,6 @@ const mockData = {
         { id: 9, name: '小林優太', position: 'デリバリー', hours: 140, performance: 86, shift: '10:00-19:00' },
         { id: 10, name: '加藤結衣', position: 'カウンター', hours: 116, performance: 88, shift: '09:00-18:00' }
     ],
-    // レビューデータ
     reviews: [
         { id: 1, user: '山田太郎', rating: 5, comment: 'いつも美味しい！サービスも最高です', date: '2026-01-19', type: '評価', status: '対応済み' },
         { id: 2, user: '佐藤花子', rating: 4, comment: 'ポテトが熱々で美味しかった', date: '2026-01-19', type: '評価', status: '対応済み' },
@@ -307,7 +270,6 @@ const mockData = {
         { id: 7, user: '渡辺健', rating: 4, comment: '新商品が美味しかった', date: '2026-01-17', type: '評価', status: '対応済み' },
         { id: 8, user: '中村さくら', rating: 1, comment: '注文が間違っていた', date: '2026-01-17', type: '苦情', status: '対応済み' }
     ],
-    // 配送管理データ
     delivery: [
         { id: 1, driver: '山田次郎', status: '配達中', orders: 3, location: '渋谷区', efficiency: 92, time: '12分', route: '渋谷→恵比寿→代官山' },
         { id: 2, driver: '鈴木三郎', status: '待機中', orders: 0, location: '新宿区', efficiency: 88, time: '-', route: '-' },
@@ -318,7 +280,6 @@ const mockData = {
     ]
 };
 
-// バッジ生成関数
 function createStatusBadge(status) {
     const badgeClasses = {
         '調理中': 'badge badge-cooking',
@@ -346,9 +307,7 @@ function createLevelBadge(level) {
     return `<span class="${className}">${level}</span>`;
 }
 
-// メニュー表示
 function renderMenu() {
-    // ツールバー
     let html = `
         <div class="toolbar">
             <div class="search-box">
@@ -373,14 +332,12 @@ function renderMenu() {
         </div>
     `;
     
-    // データ処理
     let filtered = filterData(mockData.menuItems, 
         currentFilters.menu || {}, 
         currentSearchTerm);
     let sorted = sortData(filtered, currentSort.column, currentSort.direction);
     let paginated = paginateData(sorted, currentPage, itemsPerPage);
     
-    // メニューカード
     if (paginated.length === 0) {
         html += '<div class="empty-state"><p>メニューが見つかりません</p></div>';
     } else {
@@ -412,30 +369,24 @@ function renderMenu() {
         html += `<div class="menu-grid">${menuHTML}</div>`;
     }
     
-    // ページネーション
     html += createPagination(sorted.length, currentPage, itemsPerPage, 'changePage');
     
     return html;
 }
 
-// 検索のデバウンス用タイマー
 let searchTimer = null;
 
-// メニュー検索（デバウンス付き）
 function searchMenu(term) {
     currentSearchTerm = term;
     currentPage = 1;
     
-    // 既存のタイマーをクリア
     if (searchTimer) clearTimeout(searchTimer);
     
-    // 300ms後に検索実行
     searchTimer = setTimeout(() => {
         renderContent('menu');
     }, 300);
 }
 
-// メニューフィルター
 function filterMenu(category) {
     if (!currentFilters.menu) currentFilters.menu = {};
     currentFilters.menu.category = category || undefined;
@@ -443,13 +394,11 @@ function filterMenu(category) {
     renderContent('menu');
 }
 
-// ページ変更
 function changePage(page) {
     currentPage = page;
     renderContent(currentSubTab || currentMainTab);
 }
 
-// メニュー追加
 function addMenuItem() {
     openModal('新規メニュー追加', `
         <div class="form-group">
@@ -500,7 +449,6 @@ function addMenuItem() {
     });
 }
 
-// メニュー編集
 function editMenuItem(id) {
     const item = mockData.menuItems.find(i => i.id === id);
     if (!item) return;
@@ -550,7 +498,6 @@ function editMenuItem(id) {
     });
 }
 
-// メニュー削除
 function deleteMenuItem(id) {
     confirm('このメニューを削除しますか？', () => {
         const index = mockData.menuItems.findIndex(i => i.id === id);
@@ -562,7 +509,6 @@ function deleteMenuItem(id) {
     });
 }
 
-// 注文管理表示
 function renderOrders() {
     let html = `
         <div class="toolbar">
@@ -775,7 +721,6 @@ function deleteOrder(id) {
     });
 }
 
-// 店舗管理表示
 function renderRestaurants() {
     let html = `
         <div class="toolbar">
@@ -831,7 +776,6 @@ function renderRestaurants() {
     return html;
 }
 
-// 顧客管理表示
 function renderUsers() {
     let html = `
         <div class="toolbar">
@@ -919,10 +863,6 @@ function sortUsers(column) {
     }
     renderContent('users');
 }
-
-// ============================================
-// 店舗管理関数
-// ============================================
 
 function addRestaurant() {
     openModal('新規店舗追加', `
@@ -1014,10 +954,6 @@ function deleteRestaurant(id) {
         }
     });
 }
-
-// ============================================
-// 顧客管理関数
-// ============================================
 
 function addUser() {
     openModal('新規顧客追加', `
@@ -1111,10 +1047,6 @@ function deleteUser(id) {
         }
     });
 }
-
-// ============================================
-// スタッフ管理関数
-// ============================================
 
 function addStaff() {
     openModal('新規スタッフ追加', `
@@ -1221,7 +1153,6 @@ function deleteStaff(id) {
     });
 }
 
-// ダッシュボード表示
 function renderDashboard() {
     const topProductsHTML = mockData.dashboard.topProducts.map((product, index) => `
         <tr>
@@ -1234,9 +1165,8 @@ function renderDashboard() {
                 </div>
             </td>
         </tr>
-    `).join('');
+        `).join('');
     
-    // システムステータス
     const lowStockCount = mockData.inventory.filter(i => i.status === '要補充').length;
     const activeOrders = mockData.orders.filter(o => o.status !== '完了').length;
     const complaints = mockData.reviews.filter(r => r.type === '苦情' && r.status === '対応中').length;
@@ -1336,9 +1266,7 @@ function renderDashboard() {
     `;
 }
 
-// 在庫管理表示
 function renderInventory() {
-    // 在庫不足アラート
     const lowStock = mockData.inventory.filter(i => i.status === '要補充');
     let html = '';
     
@@ -1508,7 +1436,6 @@ function editInventoryItem(id) {
         renderContent('inventory');
         showNotification('食材を更新しました', 'success');
         
-        // 在庫不足の通知
         if (item.status === '要補充') {
             showNotification(`警告: ${item.name}の在庫が不足しています`, 'warning');
         }
@@ -1526,7 +1453,6 @@ function deleteInventoryItem(id) {
     });
 }
 
-// スタッフ管理表示
 function renderStaff() {
     let html = `
         <div class="toolbar">
@@ -1607,7 +1533,6 @@ function filterStaff(position) {
     renderContent('staff');
 }
 
-// レビュー表示
 function renderReviews() {
     const avgRating = (mockData.reviews.reduce((sum, r) => sum + r.rating, 0) / mockData.reviews.length).toFixed(1);
     const complaints = mockData.reviews.filter(r => r.type === '苦情').length;
@@ -1734,7 +1659,6 @@ function viewReviewDetail(id) {
     });
 }
 
-// 配送管理表示
 function renderDelivery() {
     const activeDrivers = mockData.delivery.filter(d => d.status === '配達中').length;
     const totalOrders = mockData.delivery.reduce((sum, d) => sum + d.orders, 0);
@@ -1833,7 +1757,6 @@ function filterDelivery(status) {
     renderContent('delivery');
 }
 
-// サブタブ定義
 const subTabs = {
     'products': [
         { id: 'menu', label: 'メニュー一覧' }
@@ -1853,17 +1776,14 @@ const subTabs = {
     ]
 };
 
-// 現在のメインタブとサブタブを追跡
 let currentMainTab = 'dashboard';
 let currentSubTab = null;
 
-// サブタブを表示
 function showSubTabs(mainTab) {
     const subTabNav = document.getElementById('sub-tab-navigation');
     const subTabContainer = subTabNav.querySelector('.sub-tab-container');
     
     if (subTabs[mainTab]) {
-        // サブタブがある場合
         subTabNav.style.display = 'block';
         subTabContainer.innerHTML = subTabs[mainTab].map(tab => `
             <button class="sub-tab-button ${tab.id === currentSubTab ? 'active' : ''}" data-subtab="${tab.id}">
@@ -1871,33 +1791,27 @@ function showSubTabs(mainTab) {
             </button>
         `).join('');
         
-        // サブタブのイベントリスナーを追加
         subTabContainer.querySelectorAll('.sub-tab-button').forEach(button => {
             button.addEventListener('click', () => {
                 switchSubTab(button.dataset.subtab);
             });
         });
         
-        // 最初のサブタブを自動選択
         if (!currentSubTab || !subTabs[mainTab].find(t => t.id === currentSubTab)) {
             switchSubTab(subTabs[mainTab][0].id);
         }
     } else {
-        // サブタブがない場合は非表示
         subTabNav.style.display = 'none';
         currentSubTab = null;
     }
 }
 
-// サブタブ切り替え
 function switchSubTab(subTabName) {
     currentSubTab = subTabName;
     
-    // 検索条件をリセット
     currentSearchTerm = '';
     currentPage = 1;
     
-    // サブタブボタンのアクティブ状態を更新
     document.querySelectorAll('.sub-tab-button').forEach(button => {
         button.classList.remove('active');
         if (button.dataset.subtab === subTabName) {
@@ -1905,11 +1819,9 @@ function switchSubTab(subTabName) {
         }
     });
     
-    // コンテンツを更新
     renderContent(subTabName);
 }
 
-// コンテンツ描画
 function renderContent(tabName) {
     const contentArea = document.getElementById('content-area');
     switch (tabName) {
@@ -1943,16 +1855,13 @@ function renderContent(tabName) {
     }
 }
 
-// メインタブ切り替え処理
 function switchTab(tabName) {
     currentMainTab = tabName;
     
-    // 検索条件をリセット
     currentSearchTerm = '';
     currentPage = 1;
     currentSort = { column: null, direction: 'asc' };
     
-    // タブボタンのアクティブ状態を更新
     document.querySelectorAll('.tab-button').forEach(button => {
         button.classList.remove('active');
         if (button.dataset.tab === tabName) {
@@ -1960,35 +1869,28 @@ function switchTab(tabName) {
         }
     });
     
-    // サブタブを表示または非表示
     showSubTabs(tabName);
     
-    // ダッシュボードの場合は直接表示
     if (tabName === 'dashboard') {
         renderContent('dashboard');
     }
 }
 
-// 初期化
 document.addEventListener('DOMContentLoaded', () => {
-    // タブボタンにイベントリスナーを追加
     document.querySelectorAll('.tab-button').forEach(button => {
         button.addEventListener('click', () => {
             switchTab(button.dataset.tab);
         });
     });
     
-    // コンテンツエリアにイベント委譲を設定
     const contentArea = document.getElementById('content-area');
     
-    // 検索入力イベント（イベント委譲）
     contentArea.addEventListener('input', (e) => {
         if (e.target.classList.contains('search-input')) {
             const currentTab = currentSubTab || currentMainTab;
             currentSearchTerm = e.target.value;
             currentPage = 1;
             
-            // デバウンス処理
             if (searchTimer) clearTimeout(searchTimer);
             searchTimer = setTimeout(() => {
                 renderContent(currentTab);
@@ -1996,15 +1898,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
     
-    // フィルター変更イベント（イベント委譲）
     contentArea.addEventListener('change', (e) => {
         if (e.target.classList.contains('filter-select')) {
-            // フィルター処理は既存の関数を使用
             e.target.onchange && e.target.onchange();
         }
     });
     
-    // 初期表示（ダッシュボード）
     switchTab('dashboard');
 });
-
